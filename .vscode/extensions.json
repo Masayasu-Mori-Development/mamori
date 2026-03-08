@@ -1,0 +1,33 @@
+{
+  "recommendations": [
+    // 共通
+    "eamodio.gitlens",
+    "mhutchie.git-graph",
+    "EditorConfig.EditorConfig",
+    "esbenp.prettier-vscode",
+    "usernamehw.errorlens",
+
+    // フロントエンド（React + TypeScript）
+    "dbaeumer.vscode-eslint",
+    "dsznajder.es7-react-js-snippets",
+    "steoates.autoimport",
+    "christian-kohler.path-intellisense",
+    "clinyong.vscode-css-modules",
+
+    // バックエンド（Kotlin + Spring Boot）
+    "mathiasfrohlich.Kotlin",
+    "vscjava.vscode-java-pack",
+    "vmware.vscode-boot-dev-pack",
+    "vscjava.vscode-gradle",
+    "redhat.vscode-yaml",
+
+    // インフラ（Terraform）
+    "hashicorp.terraform",
+    "run-at-scale.terraform-doc-snippets",
+
+    // ドキュメント
+    "yzhang.markdown-all-in-one",
+    "shd101wyy.markdown-preview-enhanced",
+    "bpruitt-goddard.mermaid-markdown-syntax-highlighting"
+  ]
+}

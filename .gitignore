@@ -94,9 +94,10 @@ infra/terraform/*_override.tf.json
 out/
 
 # VS Code
-.vscode/
-!.vscode/extensions.json
-!.vscode/settings.json.example
+# .vscode/ ディレクトリはプロジェクト設定として共有
+# ただし、個人設定は除外
+.vscode/settings.local.json
+.vscode/*.log
 
 # Eclipse
 .classpath

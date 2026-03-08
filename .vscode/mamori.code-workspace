@@ -1,0 +1,36 @@
+{
+  "folders": [
+    {
+      "name": "🏠 Root",
+      "path": ".."
+    },
+    {
+      "name": "⚙️ Core Backend",
+      "path": "../core-backend"
+    },
+    {
+      "name": "🍱 Hoiku Backend",
+      "path": "../hoiku-backend"
+    },
+    {
+      "name": "🎨 Hoiku Frontend",
+      "path": "../hoiku-frontend"
+    },
+    {
+      "name": "☁️ Infrastructure",
+      "path": "../infra"
+    },
+    {
+      "name": "📚 Docs",
+      "path": "../docs"
+    }
+  ],
+  "settings": {
+    "files.exclude": {
+      "**/.git": true,
+      "**/.gradle": true,
+      "**/build": true,
+      "**/node_modules": true
+    }
+  }
+}
