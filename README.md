@@ -6,14 +6,16 @@
 
 - 給食業務のDX化
 - 監査対応の標準化
+- 全国展開（47都道府県対応）
 - 将来的に給食市場全体（介護・病院・学校）へ展開（まもり◯◯ごはんシリーズ）
 
 ## MVPスコープ
 
 - 献立入力
 - 栄養計算
-- 横浜市帳票PDF出力
-- 最低限の施設管理
+- 横浜市帳票PDF出力（全国対応の基盤設計）
+- 施設管理・本部機能
+- 運営管理機能
 
 ## 目次
 
@@ -90,7 +92,20 @@ mamori/
 │   │       └── db/migration/  # Flyway（hoikuスキーマ）
 │   ├── build.gradle.kts
 │   └── gradlew
-├── hoiku-frontend/       # React + TypeScript
+├── admin-backend/        # Spring Boot Kotlin（運営管理機能）★NEW
+│   ├── src/
+│   │   ├── main/kotlin/com/mamori/admin/
+│   │   │   ├── controller/    # 運営向けREST API
+│   │   │   ├── service/       # テナント管理・マスタデータ管理
+│   │   │   ├── repository/    # 運営データアクセス
+│   │   │   ├── security/      # 運営認証（MFA対応）
+│   │   │   └── domain/        # 運営エンティティ・DTO
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       └── db/migration/  # Flyway（adminスキーマ）
+│   ├── build.gradle.kts
+│   └── gradlew
+├── hoiku-frontend/       # React + TypeScript（顧客向け）
 │   ├── src/
 │   │   ├── components/   # UIコンポーネント
 │   │   ├── pages/        # ページコンポーネント
@@ -101,31 +116,31 @@ mamori/
 │   │   └── types/        # TypeScript型定義
 │   ├── public/           # 静的ファイル
 │   └── package.json
-├── backend/              # Spring Boot バックエンド
+├── admin-frontend/       # React + TypeScript（運営管理画面）★NEW
 │   ├── src/
-│   │   ├── main/
-│   │   │   ├── kotlin/
-│   │   │   │   └── com/mamori/
-│   │   │   │       ├── controller/    # REST API
-│   │   │   │       ├── service/       # ビジネスロジック
-│   │   │   │       ├── repository/    # データアクセス
-│   │   │   │       ├── domain/        # エンティティ・DTO
-│   │   │   │       ├── config/        # 設定クラス
-│   │   │   │       └── exception/     # 例外ハンドリング
-│   │   │   └── resources/
-│   │   │       ├── application.yml    # アプリケーション設定
-│   │   │       └── db/migration/      # DBマイグレーション
-│   │   └── test/
-│   ├── build.gradle.kts
-│   └── settings.gradle.kts
+│   │   ├── components/   # 管理画面UIコンポーネント
+│   │   ├── pages/        # 管理画面ページ
+│   │   ├── hooks/        # カスタムフック
+│   │   ├── services/     # 運営APIクライアント
+│   │   └── types/        # TypeScript型定義
+│   ├── public/
+│   └── package.json
 ├── infra/                # インフラ定義
 │   └── terraform/
 │       ├── modules/      # 再利用可能モジュール
-│       ├── environments/ # 環境別設定
-│       │   ├── dev/
-│       │   ├── staging/
-│       │   └── prod/
-│       └── main.tf
+│       └── environments/ # 環境別設定
+│           ├── dev/
+│           ├── staging/
+│           └── prod/
+├── docs/                 # 設計書・仕様書
+│   ├── 01_requirements/  # 要件定義
+│   ├── 02_design/        # システム設計
+│   ├── 03_database/      # データベース設計
+│   ├── 04_api/           # API設計
+│   ├── 05_infrastructure/# インフラ設計
+│   ├── 06_testing/       # テスト仕様
+│   ├── 07_operations/    # 運用設計
+│   └── 08_claude/        # Claude Code設定
 ├── CLAUDE.md             # Claude Code プロジェクト指示書
 ├── README.md             # このファイル
 └── .gitignore
@@ -169,9 +184,10 @@ docker run --name mamori-postgres \
   -p 5432:5432 \
   -d postgres:14
 
-# coreとhoikuスキーマの作成
+# core、hoiku、adminスキーマの作成
 docker exec -it mamori-postgres psql -U mamori_user -d mamori -c "CREATE SCHEMA IF NOT EXISTS core;"
 docker exec -it mamori-postgres psql -U mamori_user -d mamori -c "CREATE SCHEMA IF NOT EXISTS hoiku;"
+docker exec -it mamori-postgres psql -U mamori_user -d mamori -c "CREATE SCHEMA IF NOT EXISTS admin;"
 ```
 
 ローカルにインストールする場合:
@@ -186,8 +202,10 @@ GRANT ALL PRIVILEGES ON DATABASE mamori TO mamori_user;
 \c mamori
 CREATE SCHEMA IF NOT EXISTS core;
 CREATE SCHEMA IF NOT EXISTS hoiku;
+CREATE SCHEMA IF NOT EXISTS admin;
 GRANT ALL ON SCHEMA core TO mamori_user;
 GRANT ALL ON SCHEMA hoiku TO mamori_user;
+GRANT ALL ON SCHEMA admin TO mamori_user;
 ```
 
 ### 3. Core Backend のセットアップ
