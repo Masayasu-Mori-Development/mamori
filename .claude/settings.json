@@ -1,0 +1,24 @@
+{
+  "permissions": {
+    "deny": [
+      "Read(./.env)",
+      "Read(./.env.*)",
+      "Read(./frontend/.env)",
+      "Read(./frontend/.env.*)",
+      "Read(./backend/.env)",
+      "Read(./backend/.env.*)",
+      "Read(./backend/src/main/resources/application-*.yml)",
+      "Read(./backend/src/main/resources/application-*.properties)",
+      "Read(./infra/terraform/*.tfvars)",
+      "Read(./infra/terraform/terraform.tfstate)",
+      "Read(./infra/terraform/.terraform/**)",
+      "Read(./**/*secret*)",
+      "Read(./**/*credential*)",
+      "Read(./**/*.pem)",
+      "Read(./**/*.key)",
+      "Read(./.aws/**)",
+      "Read(~/.aws/**)"
+    ]
+  },
+  "respectGitignore": true
+}

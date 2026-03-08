@@ -1,0 +1,47 @@
+spring:
+  application:
+    name: mamori-hoiku-backend
+
+  profiles:
+    active: local
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+        default_schema: hoiku
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+    schemas: hoiku
+    default-schema: hoiku
+
+server:
+  port: 8081
+  servlet:
+    context-path: /api/hoiku
+  error:
+    include-message: always
+    include-stacktrace: on_param
+
+# OpenAPI/Swagger設定
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+# アプリケーション固有設定
+app:
+  name: Mamori Hoiku Backend
+  version: 1.0.0
+  jwt:
+    secret: ${JWT_SECRET:change-me-in-production-please-use-strong-secret-key}

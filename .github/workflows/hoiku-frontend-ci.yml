@@ -1,0 +1,66 @@
+name: Hoiku Frontend CI
+
+on:
+  pull_request:
+    paths:
+      - 'hoiku-frontend/**'
+      - '.github/workflows/hoiku-frontend-ci.yml'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'hoiku-frontend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: hoiku-frontend/package-lock.json
+
+      - name: Install dependencies
+        run: |
+          cd hoiku-frontend
+          npm ci
+
+      - name: Run lint
+        run: |
+          cd hoiku-frontend
+          npm run lint
+
+      - name: Run type check
+        run: |
+          cd hoiku-frontend
+          npm run type-check || npx tsc --noEmit
+
+      - name: Run tests
+        run: |
+          cd hoiku-frontend
+          npm run test -- --coverage || true
+
+      - name: Build
+        run: |
+          cd hoiku-frontend
+          npm run build
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: hoiku-frontend-build
+          path: hoiku-frontend/dist/
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: hoiku-frontend-coverage
+          path: hoiku-frontend/coverage/

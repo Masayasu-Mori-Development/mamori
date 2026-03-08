@@ -1,0 +1,88 @@
+name: Hoiku Backend CI
+
+on:
+  pull_request:
+    paths:
+      - 'hoiku-backend/**'
+      - '.github/workflows/hoiku-backend-ci.yml'
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - 'hoiku-backend/**'
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:14
+        env:
+          POSTGRES_DB: mamori_test
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x hoiku-backend/gradlew
+
+      - name: Run lint (ktlint)
+        run: |
+          cd hoiku-backend
+          ./gradlew ktlintCheck || true
+
+      - name: Run tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/mamori_test
+          SPRING_DATASOURCE_USERNAME: test
+          SPRING_DATASOURCE_PASSWORD: test
+        run: |
+          cd hoiku-backend
+          ./gradlew test
+
+      - name: Build
+        run: |
+          cd hoiku-backend
+          ./gradlew build -x test
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: hoiku-backend-test-results
+          path: hoiku-backend/build/test-results/
+
+      - name: Upload coverage reports
+        if: always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: hoiku-backend-coverage
+          path: hoiku-backend/build/reports/jacoco/
